@@ -1,0 +1,49 @@
+machine:
+    environment:
+        ASAN_OPTIONS: "detect_odr_violation=1:leak_check_at_exit=0"
+
+dependencies:
+    override:
+        - sudo apt-get -qq update
+        - sudo apt-get -qq install cmake clang-3.5 libclang-common-3.5-dev libxi-dev qtbase5-dev libqt5x11extras5-dev qttools5-dev qttools5-dev-tools libgcrypt20-dev zlib1g-dev libxtst-dev xvfb libyubikey-dev libykpers-1-dev
+
+compile:
+    pre:
+        - mkdir build
+
+    override:
+        - if [[ $CIRCLE_NODE_INDEX -eq 0 ]]; then cmake -DCMAKE_BUILD_TYPE=Debug -DWITH_GUI_TESTS=ON -DWITH_ASAN=ON -DWITH_XC_HTTP=ON -DWITH_XC_AUTOTYPE=ON -DWITH_XC_YUBIKEY=ON ..;  fi:
+            pwd: build
+            environment:
+                CC: gcc
+                CXX: g++
+
+        - if [[ $CIRCLE_NODE_INDEX -eq 1 ]]; then cmake -DCMAKE_BUILD_TYPE=Release -DWITH_GUI_TESTS=ON -DWITH_XC_HTTP=ON -DWITH_XC_AUTOTYPE=ON -DWITH_XC_YUBIKEY=ON ..; fi:
+            pwd: build
+            environment:
+                CC: gcc
+                CXX: g++
+
+        - if [[ $CIRCLE_NODE_INDEX -eq 2 ]]; then cmake -DCMAKE_BUILD_TYPE=Debug -DWITH_GUI_TESTS=ON -DWITH_XC_HTTP=ON -DWITH_XC_AUTOTYPE=ON -DWITH_XC_YUBIKEY=ON ..; fi:
+            pwd: build
+            environment:
+                CC: clang-3.5
+                CXX: clang++-3.5
+
+        - if [[ $CIRCLE_NODE_INDEX -eq 3 ]]; then cmake -DCMAKE_BUILD_TYPE=Release -DWITH_GUI_TESTS=ON -DWITH_ASAN=ON -DWITH_XC_HTTP=ON -DWITH_XC_AUTOTYPE=ON -DWITH_XC_YUBIKEY=ON ..; fi:
+            pwd: build
+            environment:
+                CC: clang-3.5
+                CXX: clang++-3.5
+
+test:
+    override:
+        - make -j4:
+            pwd: build
+            parallel: true
+        - make test ARGS+="-E testgui --output-on-failure":
+            pwd: build
+            parallel: true
+        - xvfb-run -a --server-args="-screen 0 800x600x24" make test ARGS+="-R testgui --output-on-failure":
+            pwd: build
+            parallel: true

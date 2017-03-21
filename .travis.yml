@@ -38,6 +38,10 @@ script:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then xvfb-run -a --server-args="-screen 0 800x600x24" make test ARGS+="-R testgui --output-on-failure"; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then make test ARGS+="--output-on-failure"; fi
 
+notifications:
+  irc:
+    - "chat.freenode.net#keepassxc-dev"
+
 # Generate snapcraft build when merging into master/develop branches
 #after_success:
 #  - popd
