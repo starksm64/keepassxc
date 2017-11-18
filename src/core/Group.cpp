@@ -148,7 +148,7 @@ QPixmap Group::iconScaledPixmap() const
 {
     if (m_data.customIcon.isNull()) {
         // built-in icons are 16x16 so don't need to be scaled
-        return databaseIcons()->iconPixmap(m_data.iconNumber);
+        return databaseIcons()->iconPixmap(m_data.iconNumber).scaledToHeight(64);
     }
     else {
         Q_ASSERT(m_db);

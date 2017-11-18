@@ -185,7 +185,7 @@ void EditWidgetIcons::fetchFavicon(const QUrl& url)
                 if (!image.isNull()) {
                     //Set the image
                     Uuid uuid = Uuid::random();
-                    m_database->metadata()->addCustomIcon(uuid, image.scaled(16, 16));
+                    m_database->metadata()->addCustomIcon(uuid, image.scaled(64, 64));
                     m_customIconModel->setIcons(m_database->metadata()->customIconsScaledPixmaps(),
                                                 m_database->metadata()->customIconsOrder());
                     QModelIndex index = m_customIconModel->indexFromUuid(uuid);
@@ -269,7 +269,7 @@ void EditWidgetIcons::addCustomIcon()
             QImage image(filename);
             if (!image.isNull()) {
                 Uuid uuid = Uuid::random();
-                m_database->metadata()->addCustomIcon(uuid, image.scaled(16, 16));
+                m_database->metadata()->addCustomIcon(uuid, image.scaled(64, 64));
                 m_customIconModel->setIcons(m_database->metadata()->customIconsScaledPixmaps(),
                                             m_database->metadata()->customIconsOrder());
                 QModelIndex index = m_customIconModel->indexFromUuid(uuid);
