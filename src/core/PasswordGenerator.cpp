@@ -172,6 +172,15 @@ QVector<PasswordGroup> PasswordGenerator::passwordGroups() const
     }
     if (m_classes & SpecialCharacters) {
         PasswordGroup group;
+        group.append('!');
+        group.append('#');
+        group.append('$');
+        group.append('%');
+        group.append('&');
+        group.append('*');
+        group.append('+');
+
+/* Reduce the special characters to just  !#$%&*+
 
         for (int i = 33; i <= 47; i++) {
             group.append(i);
@@ -189,9 +198,9 @@ QVector<PasswordGroup> PasswordGenerator::passwordGroups() const
             if ((m_flags & ExcludeLookAlike) && (i == 124)) { // "|"
                 continue;
             }
-
             group.append(i);
         }
+*/
 
         passwordGroups.append(group);
     }
