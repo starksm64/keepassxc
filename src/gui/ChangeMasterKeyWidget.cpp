@@ -95,10 +95,12 @@ void ChangeMasterKeyWidget::createKeyFile()
 void ChangeMasterKeyWidget::browseKeyFile()
 {
     QString filters = QString("%1 (*.key);;%2 (*)").arg(tr("Key files"), tr("All files"));
-    QString fileName = fileDialog()->getOpenFileName(this, tr("Select a key file"), QString(), filters);
+    // Change to allow multiple key files
+    //QString filename = fileDialog()->getOpenFileName(this, tr("Select key file"), QString(), filters);
+    QStringList filenames = fileDialog()->getOpenFileNames(this, tr("Select key file(s)"), QString(), filters);
 
-    if (!fileName.isEmpty()) {
-        m_ui->keyFileCombo->setEditText(fileName);
+    if (!filenames.isEmpty()) {
+        m_ui->keyFileCombo->setEditText(filenames.join(','));
     }
 }
 
@@ -153,15 +155,21 @@ void ChangeMasterKeyWidget::generateKey()
         }
     }
     if (m_ui->keyFileGroup->isChecked()) {
-        FileKey fileKey;
+        FileKey key;
+        QString keyFilenames = m_ui->keyFileCombo->currentText();
         QString errorMsg;
-        QString fileKeyName = m_ui->keyFileCombo->currentText();
-        if (!fileKey.load(fileKeyName, &errorMsg)) {
-            m_ui->messageWidget->showMessage(
-               tr("Failed to set %1 as the Key file:\n%2").arg(fileKeyName, errorMsg), MessageWidget::Error);
-            return;
+        QStringList fileList = keyFilenames.split(',');
+        QList<QString>::const_iterator iter = fileList.cbegin();
+        while(iter != fileList.cend()) {
+            QString keyFilename = *iter;
+            if (!key.load(keyFilename, &errorMsg)) {
+                m_ui->messageWidget->showMessage(tr("Can't open key file").append(":\n").append(errorMsg),
+                                                 MessageWidget::Error);
+                return;
+            }
+            m_key.addKey(key);
+            iter++;
         }
-        m_key.addKey(fileKey);
     }
 
 #ifdef WITH_XC_YUBIKEY

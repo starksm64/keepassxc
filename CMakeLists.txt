@@ -282,6 +282,9 @@ if(WITH_TESTS)
   add_subdirectory(tests)
 endif(WITH_TESTS)
 
+# Not sure why this is not included by default
+include_directories(src/keepassx_core_autogen/include)
+
 if(PRINT_SUMMARY)
   # This will print ENABLED, REQUIRED and DISABLED
   feature_summary(WHAT ALL)
